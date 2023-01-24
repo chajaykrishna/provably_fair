@@ -1,0 +1,24 @@
+###
+POST http://localhost:3000/api/neCoinTxn/sendNeCoins HTTP/1.1
+content-type: application/json
+
+{
+  "address": "0x40e8fAf25Bac03674Cc3d5356c5A743B3213cCa5",
+  "amount": "1.2333322"
+}
+
+###
+POST http://localhost:3000/api/neCoinTxn/validateTxn HTTP/1.1
+content-type: application/json
+
+{
+  "txnHash": "0x71f3db52938360fa27ba7054a171dfdfd808a42e084955baf8659aba66d38fc6"
+}
+
+###
+POST http://localhost:3000/api/events/fetchNeCoinTransfers HTTP/1.1
+content-type: application/json
+
+{
+  "lastFetchedBlock": 31308359 
+}
