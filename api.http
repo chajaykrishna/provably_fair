@@ -22,3 +22,35 @@ content-type: application/json
 {
   "lastFetchedBlock": 31308359 
 }
+
+###
+POST http://localhost:3000/api/user/userBalance HTTP/1.1
+content-type: application/json
+
+{
+  "address": "0x40e8fAf25Bac03674Cc3d5356c5A743B3213cCa5"
+}
+
+###
+POST http://localhost:3000/api/user/blacklistStatus HTTP/1.1
+content-type: application/json
+
+{
+  "address": "0x0Eb2c6afEe105F7E1E914c84A2171897DeA7AACb"
+}
+
+###
+POST http://localhost:3000/api/user/blackListUser HTTP/1.1
+content-type: application/json
+
+{
+  "address": "0x0Eb2c6afEe105F7E1E914c84A2171897DeA7AACb"
+}
+
+###
+POST http://localhost:3000/api/user/unBlackListUser HTTP/1.1
+content-type: application/json
+
+{
+  "address": "0x0Eb2c6afEe105F7E1E914c84A2171897DeA7AACb"
+}

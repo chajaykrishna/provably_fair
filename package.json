@@ -1,7 +1,7 @@
 {
-  "name": "server",
+  "name": "NEPLAY-BLOCKCHAIN",
   "version": "1.0.0",
-  "description": "NodeJS ExpressJS API boilerpalte in Typescript",
+  "description": "NEPLAY-BLOCKCHAIN APIs",
   "main": "src/app.ts",
   "scripts": {
     "build": "npm-run-all clean tsc copy-assets",
@@ -19,19 +19,9 @@
     "prettier:staged": "pretty-quick --staged",
     "prepare": "husky install"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com:arghyac35/api_boilerplate.git"
-  },
-  "keywords": [
-    "js",
-    "javascript",
-    "typescript",
-    "node",
-    "express"
-  ],
-  "author": "Arghya Chanda",
-  "license": "MIT",
+  "keywords": [],
+  "author": "",
+  "license": "",
   "dependencies": {
     "argon2": "^0.29.1",
     "celebrate": "^15.0.1",
@@ -83,12 +73,5 @@
     "ts-node": "^10.9.1",
     "tslint": "^6.1.2",
     "typescript": "^4.8.3"
-  },
-  "bugs": {
-    "url": "https://github.com/arghyac35/api_boilerplate/issues"
-  },
-  "homepage": "https://github.com/arghyac35/api_boilerplate#readme",
-  "engines": {
-    "node": "16.x"
   }
 }
