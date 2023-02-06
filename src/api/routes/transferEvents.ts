@@ -25,8 +25,7 @@ export default (app: Router) => {
         const { transferEvents, lastFetchedBlock } = await FetchTransfersInstance.fetchEvents(
           req.body.lastFetchedBlock,
         );
-        const filteredTransferEvents = transferEvents.filter((transferEvent) => transferEvent.to === PLATFORM_WALLET);
-        return res.status(200).json({ filteredTransferEvents, lastFetchedBlock });
+        return res.status(200).json({ transferEvents, lastFetchedBlock });
       } catch (e) {
         logger.error(e);
         return next(e);

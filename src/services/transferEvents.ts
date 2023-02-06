@@ -1,27 +1,29 @@
-import { ethers } from 'ethers';
+import { ethers, utils } from 'ethers';
 import { abi as neCoinAbi } from '../abi/NeCoin.json';
 import { Inject, Service } from 'typedi';
 import config from '../config';
-const { RpcUrl, NeCoinContract } = process.env;
+import { hexZeroPad } from 'ethers/lib/utils';
+const { RpcUrl, NeCoinContract, PLATFORM_WALLET } = process.env;
 
 @Service()
 export default class FetchTransfers {
   constructor(@Inject('logger') private logger) {}
 
   /**
-   * @dev have to handle a situation where the events to fetch are more than 5k i.e more than the alchemy limit
-   * @info using 50 block confirmations for transaction finality.
+   * @dev have to handle the where the events to fetch are more than 5k i.e more than the alchemy limit
+   * @info we are waiting for 50 blocks to be mined before fetching the events
    * */
   public async fetchEvents(lastBlock: number): Promise<any> {
     const provider = new ethers.providers.JsonRpcProvider(RpcUrl);
     const NeCoin_Contract = new ethers.Contract(NeCoinContract, neCoinAbi, provider);
     const lastFetchedBlock = (await provider.getBlockNumber()) - config.blockConfirmations;
-    // filter to capture only transfer events and to must be platform wallet
-    const events = await NeCoin_Contract.queryFilter(
-      'Transfer(address,address,uint256)',
-      lastBlock + 1,
-      lastFetchedBlock,
-    );
+    // filter to capture only transfer events and 'to' must be platform wallet
+    // events filter
+    const eventsFilter = {
+      address: NeCoinContract,
+      topics: [utils.id('Transfer(address,address,uint256)'), null, hexZeroPad(PLATFORM_WALLET, 32)],
+    };
+    const events = await NeCoin_Contract.queryFilter(eventsFilter, lastBlock + 1, lastFetchedBlock);
     if (!(events.length == 0)) {
       this.logger.info(`captured ${events.length} events, last fetched block: ${lastFetchedBlock}`);
       const transferEvents = events.map((event) => {
