@@ -20,7 +20,7 @@ POST http://localhost:3000/api/events/fetchNeCoinTransfers HTTP/1.1
 content-type: application/json
 
 {
-  "lastFetchedBlock": 31308359 
+  "lastFetchedBlock": 38000000
 }
 
 ###

@@ -15,6 +15,7 @@ export default {
   port: parseInt(process.env.PORT, 10),
   // block confirmations required for a transaction to be considered final in the polygon network
   blockConfirmations: 50, 
+  blockRange: 60000,
   /**
    * Used by winston logger
    */
