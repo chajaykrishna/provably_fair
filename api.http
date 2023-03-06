@@ -6,51 +6,18 @@ content-type: application/json
   "address": "0x40e8fAf25Bac03674Cc3d5356c5A743B3213cCa5",
   "amount": "1.2333322"
 }
-
 ###
-POST http://localhost:3000/api/neCoinTxn/validateTxn HTTP/1.1
+POST http://localhost:3000/api/randomNumber/getRandom HTTP/1.1
 content-type: application/json
 
 {
-  "txnHash": "0x71f3db52938360fa27ba7054a171dfdfd808a42e084955baf8659aba66d38fc6"
+  "clientSeed": "lUDWFcHXCg"
 }
-
+# result should be 33.04
 ###
-POST http://localhost:3000/api/events/fetchNeCoinTransfers HTTP/1.1
+POST http://localhost:3000/api/randomNumber/updateClientSeed HTTP/1.1
 content-type: application/json
 
 {
-  "lastFetchedBlock": 38000000
-}
-
-###
-POST http://localhost:3000/api/user/userBalance HTTP/1.1
-content-type: application/json
-
-{
-  "address": "0x40e8fAf25Bac03674Cc3d5356c5A743B3213cCa5"
-}
-
-###
-POST http://localhost:3000/api/user/blacklistStatus HTTP/1.1
-content-type: application/json
-
-{
-  "address": "0x0Eb2c6afEe105F7E1E914c84A2171897DeA7AACb"
-}
-
-###
-POST http://localhost:3000/api/user/blackListUser HTTP/1.1
-content-type: application/json
-
-{
-  "address": "0x0Eb2c6afEe105F7E1E914c84A2171897DeA7AACb"
-}
-
-###
-POST http://localhost:3000/api/user/unBlackListUser HTTP/1.1
-content-type: application/json
-
-{
-  "address": "0x0Eb2c6afEe105F7E1E914c84A2171897DeA7AACb"
+  "newClientSeed": "lUDWFcHXCgeud"
 }

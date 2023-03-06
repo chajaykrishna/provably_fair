@@ -7,25 +7,24 @@ import NeCoinTransactions from '../../services/neCoinTxn';
 const route = Router();
 
 export default (app: Router) => {
-  app.use('/neCoinTxn', route);
+  app.use('/randomNumber', route);
 
   route.post(
-    '/sendNeCoins',
+    '/getRandom',
     celebrate({
       body: Joi.object({
-        address: Joi.string().required(),
-        amount: Joi.string().required(),
+        clientSeed: Joi.string().required(),
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {
       const logger: Logger = Container.get('logger');
-      logger.debug('Calling sendNeCoin endpoint with body: %o', req.body);
+      logger.debug('Calling generateRandom endpoint with body: %o', req.body);
       try {
         // convert amount to wei
-        const NeCoinAmount = req.body.amount;
         const NeCoinTxnInstance = Container.get(NeCoinTransactions);
-        const { txnHash, from, to } = await NeCoinTxnInstance.transferFunds(req.body.address, NeCoinAmount);
-        return res.status(200).json({ txnHash, from, to, NeCoinAmount });
+        const random = await NeCoinTxnInstance.generateRandom();
+        logger.info('random number generated: ', random);
+        return res.status(200).json({ random });
       } catch (e) {
         logger.error(e);
         return next(e);
@@ -34,24 +33,25 @@ export default (app: Router) => {
   );
 
   route.post(
-    '/validateTxn',
+    '/updateClientSeed',
     celebrate({
       body: Joi.object({
-        txnHash: Joi.string().required(),
+        newClientSeed: Joi.string().required(),
       }),
     }),
     async (req: Request, res: Response, next: NextFunction) => {
       const logger: Logger = Container.get('logger');
-      logger.debug('Calling validateNeCoinTransfer endpoint with body: %o', req.body);
+      logger.debug('Calling generateRandom endpoint with body: %o', req.body);
       try {
         // convert amount to wei
         const NeCoinTxnInstance = Container.get(NeCoinTransactions);
-        const { txnHash, from, to, value } = await NeCoinTxnInstance.validateTxn(req.body.txnHash);
-        return res.status(200).json({ txnHash, from, to, value });
+        const newServerSeed = await NeCoinTxnInstance.updateClientSeed(req.body.newClientSeed);
+        return res.status(200).json({ newServerSeed });
       } catch (e) {
         logger.error(e);
         return next(e);
       }
     },
   );
+
 };

@@ -1,49 +1,70 @@
-import { ethers } from 'ethers';
-import { abi as neCoinAbi } from '../abi/NeCoin.json';
 import { Inject, Service } from 'typedi';
 import config from '../config';
-const { PrivateKey, RpcUrl, NeCoinContract } = process.env;
+// import node js crypto module
+import crypto from 'crypto';
+import _ from 'lodash';
 
+let serverSeed = '1f68dae779a7ae9e3f82105e6cfe44fc1a64404cfe415b32ec31de5e9eaf468c';
+let hashedServerSeed = 'NaN';
+let previousServerSeed = 'NaN';
+let nonce = 0;
+let currentRound = 0;
+let clientSeed = '';
+// 10001 is the total possible outcomes in the predict from 0 to 100 game
+const totalPossibleOutcomes = 10001;
 
 @Service()
 export default class NeCoinTransactions {
   constructor(@Inject('logger') private logger) {}
 
-  public async transferFunds(toAddress: string, amount: string): Promise<any> {
-    const provider = new ethers.providers.JsonRpcProvider(RpcUrl);
-    const OperatorWallet = new ethers.Wallet(PrivateKey, provider);
-    const contract = new ethers.Contract(NeCoinContract, neCoinAbi, OperatorWallet);
-    const txn = await contract.transfer(toAddress, ethers.utils.parseEther(amount));
-    this.logger.info('Transaction initiated, txnHash: %o', txn.hash);
-    const receipt = await txn.wait(config.blockConfirmations);
-    this.logger.info(
-      'Transaction finality reached, hash: %o, block confirmations: %o, neCoins transferred: %o',
-      receipt.transactionHash,
-      receipt.confirmations,
-      ethers.utils.formatUnits(receipt.logs[0].data, 18),
-    );
-    const { txnHash, from, to } = {
-      txnHash: receipt.transactionHash,
-      from: receipt.from,
-      to: receipt.to,
-    };
-    return { txnHash, from, to };
+  public async generateRandom(): Promise<any> {
+    // create a hmac sha256 hash of the server seed.
+    const hash = crypto.createHmac('sha256', serverSeed);
+    // update client seed and nonce and currentRound
+    hash.update(`${clientSeed}:${nonce}:${currentRound}`);
+    const hashDigest = hash.digest()
+    let index = 0;
+    const randomNumbers = [];
+    while (index < 32) {
+      randomNumbers.push(Number(hashDigest[index]));
+      index += 1;
+    }
+    const floatingPoints = await this.bytesToFloatingPoint(randomNumbers);
+    // multiply the floating point by the total possible outcomes
+    
+    const finalResult = floatingPoints.map((value) => {
+      return value * totalPossibleOutcomes;
+    })
+    console.log('finalResult: ', finalResult);
+    nonce += 1;
+    return { finalResult, clientSeed, nonce, hashedServerSeed, previousServerSeed };
   }
 
-  public async validateTxn(txnHash: string): Promise<any> {
-    const provider = new ethers.providers.JsonRpcProvider(RpcUrl);
-    const txn = await provider.getTransaction(txnHash);
-    // wait for the transaction to be mined
-    const receipt = await txn.wait();
-    this.logger.info('transaction confirmed, waiting for txn finality, receipt: %o', receipt);
-    await provider.waitForTransaction(txnHash, config.blockConfirmations);
-    const transferValue = ethers.utils.formatUnits(receipt.logs[0].data, 18);
-    this.logger.info('transaction confirmed by %o blocks, transfer value: %o', receipt.confirmations, transferValue);
-    const { from, to, value } = {
-      from: receipt.from,
-      to: receipt.to,
-      value: transferValue,
-    };
-    return { txnHash, from, to, value };
+  public async bytesToFloatingPoint(bytes: any): Promise<any> {
+    // convert bytes to floating point
+    console.log('bytes: ', bytes)
+    const rand = _.chunk(bytes, 4).map((_chunk) => {
+      return _chunk.reduce((result, value, index) => {
+        const divider = 256 ** (index + 1);
+        const partialResult = Number(value) / divider;
+        return result + partialResult;
+      }, 0)
+    })
+    return rand;
   }
+
+  public async updateClientSeed(_clientSeed: any): Promise<any> {
+    clientSeed = _clientSeed;
+    nonce = 0;
+    previousServerSeed = serverSeed;
+    // generate a new server seed
+    serverSeed = crypto.randomBytes(32).toString('hex');
+    // create a hmac sha256 hash of the server seed.
+    hashedServerSeed = crypto.createHmac('sha256', serverSeed).digest().toString('hex');
+
+    console.log('new hashed server seed generated: ', hashedServerSeed);
+    return { previousServerSeed, hashedServerSeed, clientSeed, nonce}
+  }
+
+  public async 
 }

@@ -25,7 +25,7 @@ export default class FetchTransfers {
     const provider = new ethers.providers.JsonRpcProvider(RpcUrl);
     const NeCoin_Contract = new ethers.Contract(NeCoinContract, neCoinAbi, provider);
     const lastBlockToFetch = (await provider.getBlockNumber()) - config.blockConfirmations;
-
+    
     const eventsFilter = {
       address: NeCoinContract,
       topics: [utils.id('Transfer(address,address,uint256)'), null, hexZeroPad(PLATFORM_WALLET, 32)],
