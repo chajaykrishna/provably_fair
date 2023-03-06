@@ -8,7 +8,7 @@ let serverSeed = '1f68dae779a7ae9e3f82105e6cfe44fc1a64404cfe415b32ec31de5e9eaf46
 let hashedServerSeed = 'NaN';
 let previousServerSeed = 'NaN';
 let nonce = 0;
-let currentRound = 0;
+const currentRound = 0;
 let clientSeed = '';
 // 10001 is the total possible outcomes in the predict from 0 to 100 game
 const totalPossibleOutcomes = 10001;
@@ -31,7 +31,6 @@ export default class NeCoinTransactions {
     }
     const floatingPoints = await this.bytesToFloatingPoint(randomNumbers);
     // multiply the floating point by the total possible outcomes
-    
     const finalResult = floatingPoints.map((value) => {
       return value * totalPossibleOutcomes;
     })
@@ -47,7 +46,7 @@ export default class NeCoinTransactions {
       return _chunk.reduce((result, value, index) => {
         const divider = 256 ** (index + 1);
         const partialResult = Number(value) / divider;
-        return result + partialResult;
+        return Number(result) + partialResult;
       }, 0)
     })
     return rand;
